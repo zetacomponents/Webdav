@@ -38,7 +38,13 @@
     },
     "description": "This component allows you to set up and run your own WebDAV (RFC 2518) server, to enable online content editing for the users of your system through the WebDAV HTTP extension.",
     "homepage": "https://github.com/zetacomponents",
-    "license": "apache2",
+    "license": "Apache-2.0",
     "name": "zetacomponents/webdav",
-    "type": "library"
+    "type": "library",
+        "require": {
+            "zetacomponents/base": "*"
+        },
+        "require-dev": {
+            "zetacomponents/unit-test": "*"
+        }
 }
