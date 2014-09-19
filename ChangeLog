@@ -1,3 +1,13 @@
+1.2 - Friday 19 September 2014
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Updated: Moving copyright information to NOTICE files.
+- Updated color scheme of architecture diagram to suite Apache Zeta Components website
+- Fixed: Missing file level doc blocks with license in the Webdav component.
+- Fixed: Updated copyright dates in NOTICE files.
+- Remove custom test runner.
+- Fixed autoloading with Composer
+
 1.1.4 - [RELEASEDATE]
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
