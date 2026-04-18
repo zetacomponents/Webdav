@@ -128,6 +128,57 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
     }
 
     /**
+     * Assert that a resolved path is inside the configured root directory.
+     *
+     * @param string $resolvedPath The already realpath()-resolved absolute path.
+     * @throws ezcBaseValueException if the path escapes the root.
+     */
+    private function assertUnderRoot( $resolvedPath )
+    {
+        $rootWithSlash = rtrim( $this->root, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
+        // Also allow exact match of root itself.
+        if ( strncmp( $resolvedPath . DIRECTORY_SEPARATOR, $rootWithSlash, strlen( $rootWithSlash ) ) !== 0
+             && $resolvedPath !== rtrim( $this->root, DIRECTORY_SEPARATOR ) )
+        {
+            throw new ezcBaseValueException(
+                'path',
+                $resolvedPath,
+                'a path inside the WebDAV root directory'
+            );
+        }
+    }
+
+    /**
+     * Resolve a client-supplied $path against the root directory.
+     *
+     * Returns the absolute filesystem path. Throws ezcBaseValueException
+     * if the path would escape the root directory. For resources that do not
+     * yet exist the parent directory must be inside the root.
+     *
+     * @param string $path Client-supplied resource path (starts with '/').
+     * @return string Absolute filesystem path safe to use for I/O.
+     */
+    private function resolveResourcePath( $path )
+    {
+        $candidate = $this->root . $path;
+        // If the resource already exists, use realpath() directly.
+        $resolved = realpath( $candidate );
+        if ( $resolved === false )
+        {
+            // Resource does not exist yet — resolve parent and append basename.
+            $resolvedParent = realpath( dirname( $candidate ) );
+            if ( $resolvedParent === false )
+            {
+                throw new ezcBaseFileNotFoundException( dirname( $candidate ) );
+            }
+            $this->assertUnderRoot( $resolvedParent );
+            return $resolvedParent . DIRECTORY_SEPARATOR . basename( $candidate );
+        }
+        $this->assertUnderRoot( $resolved );
+        return $resolved;
+    }
+
+    /**
      * Locks the backend.
      *
      * Tries to lock the backend. If the lock is already owned by this process,
@@ -385,8 +436,9 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     protected function createCollection( $path )
     {
-        mkdir( $this->root . $path );
-        chmod( $this->root . $path, $this->options->directoryMode );
+        $safePath = $this->resolveResourcePath( $path );
+        mkdir( $safePath );
+        chmod( $safePath, $this->options->directoryMode );
 
         // This automatically creates the property storage
         $storage = $this->getPropertyStoragePath( $path . '/foo' );
@@ -404,8 +456,9 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     protected function createResource( $path, $content = null )
     {
-        file_put_contents( $this->root . $path, $content );
-        chmod( $this->root . $path, $this->options->fileMode );
+        $safePath = $this->resolveResourcePath( $path );
+        file_put_contents( $safePath, $content );
+        chmod( $safePath, $this->options->fileMode );
 
         // This automatically creates the property storage if missing
         $storage = $this->getPropertyStoragePath( $path );
@@ -423,8 +476,9 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     protected function setResourceContents( $path, $content )
     {
-        file_put_contents( $this->root . $path, $content );
-        chmod( $this->root . $path, $this->options->fileMode );
+        $safePath = $this->resolveResourcePath( $path );
+        file_put_contents( $safePath, $content );
+        chmod( $safePath, $this->options->fileMode );
     }
 
     /**
@@ -438,7 +492,8 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     protected function getResourceContents( $path )
     {
-        return file_get_contents( $this->root . $path );
+        $safePath = $this->resolveResourcePath( $path );
+        return file_get_contents( $safePath );
     }
 
     /**
@@ -454,7 +509,20 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
     {
         // Get storage path for properties depending on the type of the
         // resource.
-        $storagePath = realpath( $this->root . dirname( $path ) ) 
+        $resolvedDir = realpath( $this->root . dirname( $path ) );
+        if ( $resolvedDir === false )
+        {
+            // Directory does not exist yet — verify the parent chain stays under root
+            // by checking the parent directory.
+            $resolvedDir = realpath( $this->root . dirname( dirname( $path ) ) );
+            if ( $resolvedDir === false )
+            {
+                $resolvedDir = $this->root;
+            }
+        }
+        $this->assertUnderRoot( $resolvedDir );
+
+        $storagePath = $resolvedDir
             . '/' . $this->options->propertyStoragePath . '/'
             . basename( $path ) . '.xml';
 
