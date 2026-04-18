@@ -177,26 +177,25 @@ class ezcWebdavLockTools
      * Generates a lock token that obeys to the opaquelocktoken scheme, using a
      * UUID v3.
      * 
-     * @param ezcWebdavLockRequest $request 
+     * @param ezcWebdavLockRequest $request
      * @return string
-     *
-     * @todo Should we use sha1 instead of md5?
      */
     public function generateLockToken( ezcWebdavLockRequest $request )
     {
-        $rawToken = md5(
-            $_SERVER['SERVER_PROTOCOL'] . $_SERVER['HTTP_HOST'] . $request->requestUri . microtime( true )
-        );
-
-        // @TODO: Needs version number in UUID v3/5!
+        // Generate a cryptographically random UUID v4 lock token.
+        $bytes = random_bytes( 16 );
+        // Set version bits (4) and variant bits (RFC 4122) per UUID v4 spec.
+        $bytes[6] = chr( ( ord( $bytes[6] ) & 0x0f ) | 0x40 );
+        $bytes[8] = chr( ( ord( $bytes[8] ) & 0x3f ) | 0x80 );
+        $hex = bin2hex( $bytes );
 
         return sprintf(
             'opaquelocktoken:%s-%s-%s-%s-%s',
-            substr( $rawToken,  0, 8 ),
-            substr( $rawToken,  8, 4 ),
-            substr( $rawToken, 12, 4 ),
-            substr( $rawToken, 16, 4 ),
-            substr( $rawToken, 20 )
+            substr( $hex,  0, 8 ),
+            substr( $hex,  8, 4 ),
+            substr( $hex, 12, 4 ),
+            substr( $hex, 16, 4 ),
+            substr( $hex, 20 )
         );
     }
 
