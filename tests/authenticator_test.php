@@ -123,6 +123,38 @@ class ezcWebdavAuthenticatorTest extends ezcTestCase
                 ),
                 true,
             ),
+            array(
+                new ezcWebdavDigestAuth(
+                    'GET',
+                    'Mufasa',
+                    'testrealm@host.com',
+                    'dcd98b7102dd2f0e8b11d0f600bfb0c093',
+                    '/dir/index.html',
+                    '6629fae49393a05397450978507c4ef0',
+                    'MD5',
+                    'auth',
+                    '00000001',
+                    '0a4f113b',
+                    '5ccc069c403ebaf9f0171e9517f40e41'
+                ),
+                false,
+            ),
+            array(
+                new ezcWebdavDigestAuth(
+                    'GET',
+                    'Mufasa',
+                    'testrealm@host.com',
+                    'dcd98b7102dd2f0e8b11d0f600bfb0c093',
+                    '/dir/index.html',
+                    null,
+                    'MD5',
+                    'auth',
+                    '00000001',
+                    '0a4f113b',
+                    '5ccc069c403ebaf9f0171e9517f40e41'
+                ),
+                false,
+            ),
         );
     }
 
