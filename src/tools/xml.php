@@ -153,6 +153,19 @@ class ezcWebdavXmlTool
 
         if ( $content !== null && trim( $content ) !== '' )
         {
+            // WebDAV request bodies never need a DTD. Entities declared in
+            // one can expand a small request into huge amounts of text, and
+            // external entities could read local or remote resources. This
+            // cheap check refuses such bodies before libxml parses them; the
+            // check after parsing also covers other encodings.
+            if ( stripos( $content, '<!DOCTYPE' ) !== false )
+            {
+                libxml_use_internal_errors( $oldErrorLevel );
+                throw new ezcWebdavInvalidXmlException(
+                    'Documents with a document type declaration are not allowed.'
+                );
+            }
+
             $res = $dom->loadXML( $content, LIBXML_NSCLEAN | LIBXML_NOBLANKS | LIBXML_NONET );
 
             if ( $res === false )
@@ -163,9 +176,6 @@ class ezcWebdavXmlTool
                 );
             }
 
-            // WebDAV request bodies never need a DTD. Entities declared in
-            // one can expand a small request into huge amounts of text, and
-            // external entities could read local or remote resources.
             if ( $dom->doctype !== null )
             {
                 libxml_use_internal_errors( $oldErrorLevel );

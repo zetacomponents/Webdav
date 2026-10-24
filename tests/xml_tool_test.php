@@ -70,6 +70,27 @@ class ezcWebdavXmlToolTest extends ezcTestCase
         $this->assertFalse( $tool->createDomDocument( $xml ) );
     }
 
+    public function testCreateDomRejectsDoctypeBeforeParsing()
+    {
+        $tool = new ezcWebdavXmlTool();
+
+        // Not well-formed (the root element is never closed): only a check
+        // before parsing sees the DTD.
+        $xml = '<?xml version="1.0"?>'
+             . '<!DOCTYPE D:propfind [<!ENTITY a "a">]>'
+             . '<D:propfind xmlns:D="DAV:"><D:allprop/>';
+
+        try
+        {
+            $tool->createDom( $xml );
+            $this->fail( 'ezcWebdavInvalidXmlException expected for a document with a DTD.' );
+        }
+        catch ( ezcWebdavInvalidXmlException $e )
+        {
+            $this->assertTrue( strpos( $e->getMessage(), 'document type declaration' ) !== false );
+        }
+    }
+
     public function testCreateDomRejectsExternalEntity()
     {
         $tool = new ezcWebdavXmlTool();
