@@ -249,5 +249,36 @@ class ezcWebdavBasicPathFactoryTest extends ezcTestCase
             )
         );
     }
+    public function testDotSegmentsAreRemoved()
+    {
+        $factory = new ezcWebdavBasicPathFactory( 'http://example.com' );
+
+        $this->assertSame( '/collection/other', $factory->parseUriToPath( '/collection/./resource/../other' ) );
+        $this->assertSame( '/var/www/shell.php', $factory->parseUriToPath( 'http://example.com/../../../var/www/shell.php' ) );
+        $this->assertSame( '/', $factory->parseUriToPath( '/collection/../..' ) );
+    }
+
+    public function testDotSegmentsCannotLeaveBasePath()
+    {
+        $factory = new ezcWebdavBasicPathFactory( 'http://example.com/my/webdav/base' );
+
+        $this->assertSame( '/etc/passwd', $factory->parseUriToPath( '/my/webdav/base/../../../etc/passwd' ) );
+        $this->assertSame( '/etc/passwd', $factory->parseUriToPath( 'http://example.com/my/webdav/base/collection/../../../../etc/passwd' ) );
+    }
+
+    public function testDotSegmentsInCollectionPath()
+    {
+        $factory = new ezcWebdavBasicPathFactory( 'http://example.com' );
+
+        $this->assertSame( '/collection', $factory->parseUriToPath( '/collection/sub/../' ) );
+        $this->assertSame( 'http://example.com/collection/', $factory->generateUriFromPath( '/collection' ) );
+    }
+
+    public function testNamesContainingDotsAreKept()
+    {
+        $factory = new ezcWebdavBasicPathFactory( 'http://example.com' );
+
+        $this->assertSame( '/collection/..resource../.hidden/file.', $factory->parseUriToPath( '/collection/..resource../.hidden/file.' ) );
+    }
 }
 ?>

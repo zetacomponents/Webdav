@@ -143,6 +143,15 @@ class ezcWebdavAutomaticPathFactory implements ezcWebdavPathFactory
             $this->serverFile = '';
         }
 
+        // Resolve "." and ".." segments, so that the resulting local path can
+        // never point above the root of the backend.
+        if ( ezcWebdavPathTools::hasDotSegments( $path ) )
+        {
+            $path = ezcWebdavPathTools::removeDotSegments( $path )
+                . ( substr( $path, -1, 1 ) === '/' ? '/' : '' );
+            $path = str_replace( '//', '/', $path );
+        }
+
         if ( substr( $path, -1, 1 ) === '/' )
         {
             $path = substr( $path, 0, -1 );
