@@ -156,6 +156,7 @@ return array(
     'ezcWebdavOptionsRequest'                           => 'Webdav/requests/options.php',
     'ezcWebdavOptionsResponse'                          => 'Webdav/responses/options.php',
     'ezcWebdavOutputResult'                             => 'Webdav/structs/output_result.php',
+    'ezcWebdavPathTools'                                => 'Webdav/tools/path.php',
     'ezcWebdavPluginParameters'                         => 'Webdav/plugin_parameters.php',
     'ezcWebdavPluginRegistry'                           => 'Webdav/plugin_registry.php',
     'ezcWebdavPotentialUriContent'                      => 'Webdav/structs/potential_uri_content.php',

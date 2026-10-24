@@ -461,6 +461,50 @@ class ezcWebdavFileBackendTest extends ezcTestCase
         );
     }
 
+    public function testRequestPathCannotLeaveRoot()
+    {
+        file_put_contents( $this->tempDir . 'secret.txt', 'secret' );
+        $backend = new ezcWebdavFileBackend( $this->tempDir . 'backend/' );
+
+        $request = new ezcWebdavGetRequest( '/../secret.txt' );
+        $request->validateHeaders();
+        $response = $backend->get( $request );
+        $this->assertTrue( $response instanceof ezcWebdavErrorResponse, 'GET outside the root was not refused.' );
+        $this->assertSame( ezcWebdavResponse::STATUS_403, $response->status );
+
+        $request = new ezcWebdavPutRequest( '/collection/../../put.txt', 'data' );
+        $request->setHeader( 'Content-Length', '4' );
+        $request->validateHeaders();
+        $response = $backend->put( $request );
+        $this->assertTrue( $response instanceof ezcWebdavErrorResponse, 'PUT outside the root was not refused.' );
+        $this->assertFalse( file_exists( $this->tempDir . 'put.txt' ) );
+
+        $request = new ezcWebdavMakeCollectionRequest( '/../mkcol' );
+        $request->validateHeaders();
+        $response = $backend->makeCollection( $request );
+        $this->assertTrue( $response instanceof ezcWebdavErrorResponse, 'MKCOL outside the root was not refused.' );
+        $this->assertFalse( file_exists( $this->tempDir . 'mkcol' ) );
+    }
+
+    public function testDestinationCannotLeaveRoot()
+    {
+        $backend = new ezcWebdavFileBackend( $this->tempDir . 'backend/' );
+
+        $request = new ezcWebdavCopyRequest( '/resource', '/../copied' );
+        $request->validateHeaders();
+        $response = $backend->copy( $request );
+        $this->assertTrue( $response instanceof ezcWebdavErrorResponse, 'COPY outside the root was not refused.' );
+        $this->assertSame( ezcWebdavResponse::STATUS_403, $response->status );
+        $this->assertFalse( file_exists( $this->tempDir . 'copied' ) );
+
+        $request = new ezcWebdavMoveRequest( '/resource', '/collection/../../moved' );
+        $request->validateHeaders();
+        $response = $backend->move( $request );
+        $this->assertTrue( $response instanceof ezcWebdavErrorResponse, 'MOVE outside the root was not refused.' );
+        $this->assertFalse( file_exists( $this->tempDir . 'moved' ) );
+        $this->assertTrue( file_exists( $this->tempDir . 'backend/resource' ) );
+    }
+
     public function testResourceCopy()
     {
         $backend = new ezcWebdavFileBackend( $this->tempDir . 'backend/' );

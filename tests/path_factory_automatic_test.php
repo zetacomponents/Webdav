@@ -227,5 +227,24 @@ class ezcWebdavAutomaticPathFactoryTest extends ezcTestCase
             $factory->generateUriFromPath( '/collection/ressource' )
         );
     }
+    public function testDotSegmentsAreRemoved()
+    {
+        $_SERVER['SCRIPT_FILENAME']     = '/var/www/webdav/htdocs/webdav.php';
+        $_SERVER['DOCUMENT_ROOT']       = '/var/www/webdav/htdocs/';
+
+        $factory = new ezcWebdavAutomaticPathFactory();
+        $this->assertSame(
+            '/etc/passwd',
+            $factory->parseUriToPath( '/webdav.php/collection/../../../etc/passwd' )
+        );
+        $this->assertSame(
+            '/var/www/shell.php',
+            $factory->parseUriToPath( 'http://example.com/webdav.php/../../var/www/shell.php' )
+        );
+        $this->assertSame(
+            '/collection/other',
+            $factory->parseUriToPath( '/webdav.php/collection/./resource/../other' )
+        );
+    }
 }
 ?>

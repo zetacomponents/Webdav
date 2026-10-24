@@ -125,6 +125,18 @@ class ezcWebdavBasicPathFactory implements ezcWebdavPathFactory
 
         $requestPath = str_replace( '//', '/', $requestPath );
 
+        // Resolve "." and ".." below the base path, so that the resulting
+        // local path can never point above the root of the backend.
+        $basePathLength = ( isset( $this->baseUriParts['path'] ) ? strlen( $this->baseUriParts['path'] ) : 0 );
+        if ( ezcWebdavPathTools::hasDotSegments( substr( $requestPath, $basePathLength ) ) )
+        {
+            $isCollection = ( substr( $requestPath, -1, 1 ) === '/' );
+            $requestPath  = substr( $requestPath, 0, $basePathLength )
+                . ezcWebdavPathTools::removeDotSegments( substr( $requestPath, $basePathLength ) )
+                . ( $isCollection ? '/' : '' );
+            $requestPath  = str_replace( '//', '/', $requestPath );
+        }
+
         if ( substr( $requestPath, -1, 1 ) === '/' )
         {
             $requestPath = substr( $requestPath, 0, -1 );

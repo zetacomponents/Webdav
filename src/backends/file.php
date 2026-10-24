@@ -1092,6 +1092,11 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function get( ezcWebdavGetRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock( true );
         $return = parent::get( $request );
         $this->freeLock();
@@ -1116,6 +1121,11 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function head( ezcWebdavHeadRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock( true );
         $return = parent::head( $request );
         $this->freeLock();
@@ -1146,6 +1156,11 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function propFind( ezcWebdavPropFindRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock( true );
         $return = parent::propFind( $request );
         $this->freeLock();
@@ -1173,6 +1188,11 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function propPatch( ezcWebdavPropPatchRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock();
         $return = parent::propPatch( $request );
         $this->freeLock();
@@ -1197,6 +1217,11 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function put( ezcWebdavPutRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock();
         $return = parent::put( $request );
         $this->freeLock();
@@ -1221,6 +1246,11 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function delete( ezcWebdavDeleteRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock();
         $return = parent::delete( $request );
         $this->freeLock();
@@ -1246,6 +1276,11 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function copy( ezcWebdavCopyRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock();
         $return = parent::copy( $request );
         $this->freeLock();
@@ -1271,6 +1306,11 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function move( ezcWebdavMoveRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock();
         $return = parent::move( $request );
         $this->freeLock();
@@ -1295,11 +1335,55 @@ class ezcWebdavFileBackend extends ezcWebdavSimpleBackend implements ezcWebdavLo
      */
     public function makeCollection( ezcWebdavMakeCollectionRequest $request )
     {
+        if ( ( $error = $this->checkRequestPaths( $request ) ) !== null )
+        {
+            return $error;
+        }
+
         $this->acquireLock();
         $return = parent::makeCollection( $request );
         $this->freeLock();
 
         return $return;
+    }
+
+    /**
+     * Refuses requests with paths that could point outside of the root.
+     *
+     * Every path in this backend is used as $this->root . $path, so a ".."
+     * segment in the request URI or in the Destination header of a COPY or
+     * MOVE request would address files outside of the root directory. The
+     * path factories shipped with this component remove such segments; this
+     * check protects against custom path factories and direct use of the
+     * backend. Both "/" and "\" count as separators, since Windows accepts
+     * both.
+     *
+     * Returns an error response with status 403 for such a request, null
+     * otherwise.
+     * 
+     * @param ezcWebdavRequest $request 
+     * @return ezcWebdavErrorResponse|null
+     */
+    private function checkRequestPaths( ezcWebdavRequest $request )
+    {
+        $paths = array( $request->requestUri );
+        if ( $request instanceof ezcWebdavCopyRequest || $request instanceof ezcWebdavMoveRequest )
+        {
+            $paths[] = $request->getHeader( 'Destination' );
+        }
+
+        foreach ( $paths as $path )
+        {
+            if ( ezcWebdavPathTools::hasDotSegments( $path, '/\\' ) )
+            {
+                return new ezcWebdavErrorResponse(
+                    ezcWebdavResponse::STATUS_403,
+                    $path,
+                    'Paths must not contain "." or ".." segments.'
+                );
+            }
+        }
+        return null;
     }
 }
 
