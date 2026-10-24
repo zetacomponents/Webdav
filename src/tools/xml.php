@@ -129,10 +129,14 @@ class ezcWebdavXmlTool
      * @see LIBXML_NOWARNING
      * @see LIBXML_NSCLEAN
      * @see LIBXML_NOBLANKS
+     * @see LIBXML_NONET
      * 
      * @throws ezcWebdavInvalidRequestBodyException
      *         in case libxml produces an error with code other than 100 while
      *         loading $content.
+     * @throws ezcWebdavInvalidXmlException
+     *         if $content cannot be parsed or contains a document type
+     *         declaration.
      *
      * @apichange This method will replace {@link createDomDocument()} in the
      *            next major version (2.0) and will be renamed to
@@ -149,12 +153,24 @@ class ezcWebdavXmlTool
 
         if ( $content !== null && trim( $content ) !== '' )
         {
-            $res = $dom->loadXML( $content, LIBXML_NSCLEAN | LIBXML_NOBLANKS );
+            $res = $dom->loadXML( $content, LIBXML_NSCLEAN | LIBXML_NOBLANKS | LIBXML_NONET );
 
             if ( $res === false )
             {
+                libxml_use_internal_errors( $oldErrorLevel );
                 throw new ezcWebdavInvalidXmlException(
                     "Libxml error.'"
+                );
+            }
+
+            // WebDAV request bodies never need a DTD. Entities declared in
+            // one can expand a small request into huge amounts of text, and
+            // external entities could read local or remote resources.
+            if ( $dom->doctype !== null )
+            {
+                libxml_use_internal_errors( $oldErrorLevel );
+                throw new ezcWebdavInvalidXmlException(
+                    'Documents with a document type declaration are not allowed.'
                 );
             }
 
