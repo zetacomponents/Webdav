@@ -45,12 +45,16 @@ class ezcWebdavPathTools
      * the result starts with a "/", has no trailing "/" and no empty
      * segments.
      *
+     * The path is not percent-decoded: "%2e%2e" is an ordinary segment
+     * here, as it is for the backends of this component, which do not
+     * decode paths either.
+     *
      * @param string $path
      * @return string
      */
     public static function removeDotSegments( $path )
     {
-        if ( !self::hasDotSegments( $path, '/' ) )
+        if ( !self::matchDotSegments( $path, '/' ) )
         {
             return $path;
         }
@@ -74,12 +78,29 @@ class ezcWebdavPathTools
      * Returns if $path contains a "." or ".." segment.
      *
      * $separators is a list of characters, each of which separates segments.
+     *
+     * Paths are not percent-decoded anywhere in this component. A custom
+     * backend that decodes them would turn "%2e%2e" into "..", so $path is
+     * checked in its percent-decoded form as well.
      * 
      * @param string $path 
      * @param string $separators 
      * @return bool
      */
     public static function hasDotSegments( $path, $separators = '/' )
+    {
+        return self::matchDotSegments( $path, $separators ) ||
+               self::matchDotSegments( rawurldecode( (string) $path ), $separators );
+    }
+
+    /**
+     * Returns if $path, as it is, contains a "." or ".." segment.
+     *
+     * @param string $path 
+     * @param string $separators 
+     * @return bool
+     */
+    private static function matchDotSegments( $path, $separators )
     {
         $sep = preg_quote( $separators, '(' );
         return preg_match( "((?:^|[$sep])\\.\\.?(?:[$sep]|$))", (string) $path ) === 1;

@@ -505,6 +505,24 @@ class ezcWebdavFileBackendTest extends ezcTestCase
         $this->assertTrue( file_exists( $this->tempDir . 'backend/resource' ) );
     }
 
+    public function testPercentEncodedDotSegmentsAreRefused()
+    {
+        file_put_contents( $this->tempDir . 'secret.txt', 'secret' );
+        $backend = new ezcWebdavFileBackend( $this->tempDir . 'backend/' );
+
+        $request = new ezcWebdavGetRequest( '/%2e%2e/secret.txt' );
+        $request->validateHeaders();
+        $response = $backend->get( $request );
+        $this->assertTrue( $response instanceof ezcWebdavErrorResponse, 'GET with "%2e%2e" was not refused.' );
+        $this->assertSame( ezcWebdavResponse::STATUS_403, $response->status );
+
+        $request = new ezcWebdavCopyRequest( '/resource', '/%2E%2E/copied' );
+        $request->validateHeaders();
+        $response = $backend->copy( $request );
+        $this->assertTrue( $response instanceof ezcWebdavErrorResponse, 'COPY to "%2E%2E" was not refused.' );
+        $this->assertSame( ezcWebdavResponse::STATUS_403, $response->status );
+    }
+
     public function testResourceCopy()
     {
         $backend = new ezcWebdavFileBackend( $this->tempDir . 'backend/' );

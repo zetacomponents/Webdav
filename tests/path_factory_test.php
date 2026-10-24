@@ -274,6 +274,30 @@ class ezcWebdavBasicPathFactoryTest extends ezcTestCase
         $this->assertSame( 'http://example.com/collection/', $factory->generateUriFromPath( '/collection' ) );
     }
 
+    public function testFragmentCannotLeaveRoot()
+    {
+        $factory = new ezcWebdavBasicPathFactory( 'http://example.com/dav' );
+
+        $this->assertSame( '/y', $factory->parseUriToPath( 'http://example.com/dav/x#/../../y' ) );
+        $this->assertSame( '/x#frag', $factory->parseUriToPath( 'http://example.com/dav/x#frag' ) );
+    }
+
+    public function testPercentEncodedDotsAreNotDecoded()
+    {
+        $factory = new ezcWebdavBasicPathFactory( 'http://example.com' );
+
+        // Paths are never decoded, so "%2e%2e" is an ordinary name here.
+        $this->assertSame( '/a/%2e%2e/b', $factory->parseUriToPath( '/a/%2e%2e/b' ) );
+        $this->assertSame( '/a/%2e%2e/b', ezcWebdavPathTools::removeDotSegments( '/a/%2e%2e/b' ) );
+
+        // A backend that decodes paths would see "..", so the check used by
+        // the file backend looks at the decoded form, too.
+        $this->assertTrue( ezcWebdavPathTools::hasDotSegments( '/a/%2e%2e/b' ) );
+        $this->assertTrue( ezcWebdavPathTools::hasDotSegments( '/a/%2E./b' ) );
+        $this->assertTrue( ezcWebdavPathTools::hasDotSegments( '/a/..%2f..%2fb' ) );
+        $this->assertFalse( ezcWebdavPathTools::hasDotSegments( '/a/%2e%2ex/b' ) );
+    }
+
     public function testNamesContainingDotsAreKept()
     {
         $factory = new ezcWebdavBasicPathFactory( 'http://example.com' );
