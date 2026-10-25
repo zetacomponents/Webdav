@@ -123,7 +123,7 @@ class ezcWebdavServerConfiguration
         $xmlToolClass                     = 'ezcWebdavXmlTool',
         $propertyHandlerClass             = 'ezcWebdavPropertyHandler',
         $headerHandlerClass               = 'ezcWebdavHeaderHandler',
-        ezcWebdavPathFactory $pathFactory = null
+        ?ezcWebdavPathFactory $pathFactory = null
     )
     {
         $this->properties['userAgentRegex']       = null;

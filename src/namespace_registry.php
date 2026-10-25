@@ -103,6 +103,7 @@ class ezcWebdavNamespaceRegistry implements ArrayAccess
      * @throws ezcBaseValueException
      *         if the given namespace is already registered.
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet( $offset, $value )
     {
         if ( isset( $this->namespaceMap[$offset] ) )
@@ -126,6 +127,7 @@ class ezcWebdavNamespaceRegistry implements ArrayAccess
      * @return string
      * @ignore
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet( $offset )
     {
         if ( !isset( $this->namespaceMap[$offset] ) )
@@ -144,6 +146,7 @@ class ezcWebdavNamespaceRegistry implements ArrayAccess
      * @return void
      * @ignore
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset( $offset )
     {
         if ( isset( $this->namespaceMap[$offset] ) )
@@ -162,6 +165,7 @@ class ezcWebdavNamespaceRegistry implements ArrayAccess
      * @return bool
      * @ignore
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists( $offset )
     {
         return isset( $this->namespaceMap[$offset] );
