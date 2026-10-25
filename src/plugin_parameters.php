@@ -41,7 +41,7 @@ class ezcWebdavPluginParameters extends ArrayObject
      * @param array $data
      * @return void
      */
-    public function __construct( array $data = null )
+    public function __construct( ?array $data = null )
     {
         $parameters = ( $data === null ? array() : $data );
         parent::__construct( $parameters );

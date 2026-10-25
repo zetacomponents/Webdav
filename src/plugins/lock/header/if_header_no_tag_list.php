@@ -65,6 +65,7 @@ class ezcWebdavLockIfHeaderNoTagList extends ezcWebdavLockIfHeaderList
      * @throws ezcBaseValueException
      *         if $offset is not a string with length > 0.
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists( $offset )
     {
         if ( !is_string( $offset ) || strlen( $offset ) < 1 )
@@ -92,6 +93,7 @@ class ezcWebdavLockIfHeaderNoTagList extends ezcWebdavLockIfHeaderList
      * @throws ezcBaseValueException
      *         if $offset is not a string with length > 0.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet( $offset )
     {
         if ( !is_string( $offset ) || strlen( $offset ) < 1 )
@@ -117,6 +119,7 @@ class ezcWebdavLockIfHeaderNoTagList extends ezcWebdavLockIfHeaderList
      * @throws RuntimeException
      *         since this operation is not allowed.
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet( $offset, $value )
     {
         throw new RuntimeException( 'Operation not allowed!' );
@@ -131,6 +134,7 @@ class ezcWebdavLockIfHeaderNoTagList extends ezcWebdavLockIfHeaderList
      * @throws RuntimeException
      *         since this operation is not allowed.
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset( $offset )
     {
         throw new RuntimeException( 'Operation not allowed!' );

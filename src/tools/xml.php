@@ -78,7 +78,7 @@ class ezcWebdavXmlTool
      * @param ezcWebdavNamespaceRegistry $namespaceRegistry 
      * @return void
      */
-    public function __construct( ezcWebdavNamespaceRegistry $namespaceRegistry = null )
+    public function __construct( ?ezcWebdavNamespaceRegistry $namespaceRegistry = null )
     {
         // Initialize properties
         $this->properties['namespaceRegistry'] = null;

@@ -275,6 +275,7 @@ class ezcWebdavBasicPropertyStorage implements ezcWebdavPropertyStorage
      * 
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         $count = 0;
@@ -297,6 +298,7 @@ class ezcWebdavBasicPropertyStorage implements ezcWebdavPropertyStorage
      * 
      * @return ezcWebdavProperty
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         list( $namespace, $name ) = $this->propertyOrder[$this->propertyOrderPosition];
@@ -324,6 +326,7 @@ class ezcWebdavBasicPropertyStorage implements ezcWebdavPropertyStorage
      * 
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->propertyOrderPosition;
@@ -337,6 +340,7 @@ class ezcWebdavBasicPropertyStorage implements ezcWebdavPropertyStorage
      * 
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->propertyOrderPosition;
@@ -350,6 +354,7 @@ class ezcWebdavBasicPropertyStorage implements ezcWebdavPropertyStorage
      * 
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->propertyOrderPosition = 0;
@@ -363,6 +368,7 @@ class ezcWebdavBasicPropertyStorage implements ezcWebdavPropertyStorage
      * 
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         do
