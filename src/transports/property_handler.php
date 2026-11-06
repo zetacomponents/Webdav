@@ -72,7 +72,7 @@ class ezcWebdavPropertyHandler
      * @param ezcWebdavXmlTool $xml 
      * @return void
      */
-    public function __construct( ezcWebdavXmlTool $xml = null )
+    public function __construct( ?ezcWebdavXmlTool $xml = null )
     {
         if ( $xml !== null )
         {
@@ -565,7 +565,7 @@ class ezcWebdavPropertyHandler
      * @param DOMDocument $dom To create the returned DOMElements.
      * @return array(DOMElement)
      */
-    protected function serializeLinkContent( array $links = null, DOMDocument $dom )
+    protected function serializeLinkContent( ?array $links, DOMDocument $dom )
     {
         $linkContentElements = array();
 

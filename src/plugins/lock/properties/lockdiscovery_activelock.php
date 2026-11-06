@@ -82,11 +82,11 @@ class ezcWebdavLockDiscoveryPropertyActiveLock extends ezcWebdavSupportedLockPro
         $lockType                           = ezcWebdavLockRequest::TYPE_READ,
         $lockScope                          = ezcWebdavLockRequest::SCOPE_SHARED,
         $depth                              = ezcWebdavRequest::DEPTH_INFINITY,
-        ezcWebdavPotentialUriContent $owner = null,
+        ?ezcWebdavPotentialUriContent $owner = null,
         $timeout                            = null,
-        ezcWebdavPotentialUriContent $token = null,
+        ?ezcWebdavPotentialUriContent $token = null,
         $baseUri                            = null,
-        ezcWebdavDateTime $lastAccess       = null
+        ?ezcWebdavDateTime $lastAccess      = null
     )
     {
         parent::__construct( $lockType, $lockScope );

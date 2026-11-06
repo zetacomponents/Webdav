@@ -55,7 +55,7 @@ class ezcWebdavLockPluginConfiguration extends ezcWebdavPluginConfiguration
      * @param ezcWebdavLockPluginOptions $options
      * @return void
      */
-    public function __construct( ezcWebdavLockPluginOptions $options = null )
+    public function __construct( ?ezcWebdavLockPluginOptions $options = null )
     {
         if ( $options === null )
         {

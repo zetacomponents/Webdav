@@ -117,6 +117,10 @@ class ezcWebdavAutomaticPathFactory implements ezcWebdavPathFactory
      * MUST always contain a starting slash. For the root URI the path "/" MUST
      * be used.
      *
+     * "." and ".." segments are removed, so the path never points above the
+     * root. The path is not percent-decoded: a backend that decodes it must
+     * check the decoded path for ".." segments again.
+     *
      * @param string $uri
      * @return string
      */
@@ -141,6 +145,15 @@ class ezcWebdavAutomaticPathFactory implements ezcWebdavPathFactory
         {
             $path = $requestPath;
             $this->serverFile = '';
+        }
+
+        // Resolve "." and ".." segments, so that the resulting local path can
+        // never point above the root of the backend.
+        if ( ezcWebdavPathTools::hasDotSegments( $path ) )
+        {
+            $path = ezcWebdavPathTools::removeDotSegments( $path )
+                . ( substr( $path, -1, 1 ) === '/' ? '/' : '' );
+            $path = str_replace( '//', '/', $path );
         }
 
         if ( substr( $path, -1, 1 ) === '/' )

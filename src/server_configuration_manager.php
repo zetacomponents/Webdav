@@ -209,6 +209,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * @param string $value 
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet( $offset, $value )
     {
         $this->checkOffset( $offset );
@@ -232,6 +233,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * @return string
      * @ignore
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet( $offset )
     {
         $this->checkOffset( $offset );
@@ -249,6 +251,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * @return void
      * @ignore
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset( $offset )
     {
         $this->checkOffset( $offset );
@@ -267,6 +270,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * @return bool
      * @ignore
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists( $offset )
     {
         return isset( $this->configurations[$offset] );
@@ -279,6 +283,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * 
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current( $this->configurations );
@@ -289,6 +294,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * 
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key( $this->configurations );
@@ -299,6 +305,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * 
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         return next( $this->configurations );
@@ -309,6 +316,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * 
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         return reset( $this->configurations );
@@ -319,6 +327,7 @@ class ezcWebdavServerConfigurationManager implements ArrayAccess, Iterator
      * 
      * @return boolean
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return ( current( $this->configurations ) !== false );

@@ -78,7 +78,7 @@ class ezcWebdavXmlTool
      * @param ezcWebdavNamespaceRegistry $namespaceRegistry 
      * @return void
      */
-    public function __construct( ezcWebdavNamespaceRegistry $namespaceRegistry = null )
+    public function __construct( ?ezcWebdavNamespaceRegistry $namespaceRegistry = null )
     {
         // Initialize properties
         $this->properties['namespaceRegistry'] = null;
@@ -129,10 +129,14 @@ class ezcWebdavXmlTool
      * @see LIBXML_NOWARNING
      * @see LIBXML_NSCLEAN
      * @see LIBXML_NOBLANKS
+     * @see LIBXML_NONET
      * 
      * @throws ezcWebdavInvalidRequestBodyException
      *         in case libxml produces an error with code other than 100 while
      *         loading $content.
+     * @throws ezcWebdavInvalidXmlException
+     *         if $content cannot be parsed or contains a document type
+     *         declaration.
      *
      * @apichange This method will replace {@link createDomDocument()} in the
      *            next major version (2.0) and will be renamed to
@@ -149,12 +153,34 @@ class ezcWebdavXmlTool
 
         if ( $content !== null && trim( $content ) !== '' )
         {
-            $res = $dom->loadXML( $content, LIBXML_NSCLEAN | LIBXML_NOBLANKS );
+            // WebDAV request bodies never need a DTD. Entities declared in
+            // one can expand a small request into huge amounts of text, and
+            // external entities could read local or remote resources. This
+            // cheap check refuses such bodies before libxml parses them; the
+            // check after parsing also covers other encodings.
+            if ( stripos( $content, '<!DOCTYPE' ) !== false )
+            {
+                libxml_use_internal_errors( $oldErrorLevel );
+                throw new ezcWebdavInvalidXmlException(
+                    'Documents with a document type declaration are not allowed.'
+                );
+            }
+
+            $res = $dom->loadXML( $content, LIBXML_NSCLEAN | LIBXML_NOBLANKS | LIBXML_NONET );
 
             if ( $res === false )
             {
+                libxml_use_internal_errors( $oldErrorLevel );
                 throw new ezcWebdavInvalidXmlException(
                     "Libxml error.'"
+                );
+            }
+
+            if ( $dom->doctype !== null )
+            {
+                libxml_use_internal_errors( $oldErrorLevel );
+                throw new ezcWebdavInvalidXmlException(
+                    'Documents with a document type declaration are not allowed.'
                 );
             }
 

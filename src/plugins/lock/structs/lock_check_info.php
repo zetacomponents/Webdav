@@ -107,7 +107,7 @@ class ezcWebdavLockCheckInfo extends ezcBaseStruct
         $ifHeader                                    = null,
         $authHeader                                  = null,
         $access                                      = ezcWebdavAuthorizer::ACCESS_WRITE,
-        ezcWebdavLockCheckObserver $requestGenerator = null,
+        ?ezcWebdavLockCheckObserver $requestGenerator = null,
         $allowSharedLocks                            = false
     )
     {

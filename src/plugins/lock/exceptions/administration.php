@@ -45,7 +45,7 @@ class ezcWebdavLockAdministrationException extends ezcWebdavException
      * @param mixed $message 
      * @param ezcWebdavErrorResponse $error 
      */
-    public function __construct( $message, ezcWebdavErrorResponse $error = null )
+    public function __construct( $message, ?ezcWebdavErrorResponse $error = null )
     {
         parent::__construct(
             $message . ( $error !== null ? ' (' . (string) $error . ')' : '' )

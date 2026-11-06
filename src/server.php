@@ -461,13 +461,7 @@ class ezcWebdavServer
      */
     private function getNonce()
     {
-        // This should be random enough that it cannot be guessed easily
-        return md5(
-            $this->options->realm 
-                . ':' . microtime()
-                . ':' . $_SERVER['SERVER_NAME'] 
-                . ':' . uniqid( mt_rand(), true )
-        );
+        return bin2hex( random_bytes( 16 ) );
     }
 
     /**
