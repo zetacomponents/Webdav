@@ -86,7 +86,9 @@ abstract class ezcWebdavDigestAuthenticatorBase implements ezcWebdavDigestAuthen
             $digest = md5( "{$ha1}:{$data->nonce}:{$ha2}" );
         }
 
-        return $digest === $data->response;
+        // Compare in constant time, so the response time does not reveal
+        // how much of the digest matched.
+        return is_string( $data->response ) && hash_equals( $digest, $data->response );
     }
     
     /**
