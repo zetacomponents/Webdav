@@ -57,7 +57,7 @@ class ezcWebdavRequestLockInfoContent extends ezcWebdavInfrastructureBase
      * @param ezcWebdavPotentialUriContent $owner 
      * @return void
      */
-    public function __construct( $lockScope, $lockType, ezcWebdavPotentialUriContent $owner = null )
+    public function __construct( $lockScope, $lockType, ?ezcWebdavPotentialUriContent $owner = null )
     {
         $this->properties['lockScope'] = null;
         $this->properties['lockType']  = null;

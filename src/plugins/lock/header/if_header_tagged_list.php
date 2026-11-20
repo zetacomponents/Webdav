@@ -66,6 +66,7 @@ class ezcWebdavLockIfHeaderTaggedList extends ezcWebdavLockIfHeaderList
      * @throws ezcBaseValueException
      *         if $offset is not a string with length > 0.
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists( $offset )
     {
         if ( !is_string( $offset ) || strlen( $offset ) < 1 )
@@ -93,6 +94,7 @@ class ezcWebdavLockIfHeaderTaggedList extends ezcWebdavLockIfHeaderList
      * @throws ezcBaseValueException
      *         if $offset is not a string with length > 0.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet( $offset )
     {
         if ( $this->offsetExists( $offset ) )
@@ -115,6 +117,7 @@ class ezcWebdavLockIfHeaderTaggedList extends ezcWebdavLockIfHeaderList
      * @throws ezcBaseValueException
      *         if $offset or $value are not of the correct type.
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet( $offset, $value )
     {
         if ( !is_string( $offset ) || strlen( $offset ) < 1 )
@@ -148,6 +151,7 @@ class ezcWebdavLockIfHeaderTaggedList extends ezcWebdavLockIfHeaderList
      * @throws ezcBaseValueException
      *         if $offset is not a string with length > 0.
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset( $offset )
     {
         if ( !is_string( $offset ) || strlen( $offset ) < 1 )

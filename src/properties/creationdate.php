@@ -42,7 +42,7 @@ class ezcWebdavCreationDateProperty extends ezcWebdavLiveProperty
      * @param ezcWebdavDateTime $date The date value.
      * @return void
      */
-    public function __construct( ezcWebdavDateTime $date = null )
+    public function __construct( ?ezcWebdavDateTime $date = null )
     {
         parent::__construct( 'creationdate' );
 
